@@ -3,18 +3,19 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using AuthApp.ViewModels; // пространство имен моделей RegisterModel и LoginModel
-using AuthApp.Models; // пространство имен UserContext и класса User
+using LoginWebApp.ViewModels; // пространство имен моделей RegisterModel и LoginModel
+using LoginWebApp.Models; // пространство имен UserContext и класса User
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System;
+using System.Linq;
 
-namespace AuthApp.Controllers
+namespace LoginWebApp.Controllers
 {
     public class AccountController : Controller
     {
-        private UserContext db;
-        public AccountController(UserContext context)
+        private ApplicationContext db;
+        public AccountController(ApplicationContext context)
         {
             db = context;
         }
@@ -23,6 +24,7 @@ namespace AuthApp.Controllers
         {
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginModel model,string date)
@@ -39,11 +41,13 @@ namespace AuthApp.Controllers
             }
             return View(model);
         }
+
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterModel model)
@@ -85,6 +89,22 @@ namespace AuthApp.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Account");
+        }
+
+
+        [HttpGet]
+        public IActionResult ShowOrders()
+        {
+            var orders = db.Order.ToList();
+            var items = db.Items.ToList();
+            var orderItems = db.OrderItems.ToList();
+            var order = from or in orderItems
+                        join o in orders on or.OrdersId equals o.id
+                        join i in items on or.ItemId equals i.Id
+                        select new OrdersModel(o.OrderNumber, o.OrderDate, or.Amount, or.Amount * i.Price);
+            var ordersViewModel = new OrdersViewModel();
+            ordersViewModel.ListOrders = order;
+            return View(ordersViewModel);
         }
     }
 }
