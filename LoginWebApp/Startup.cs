@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using LoginWebApp.Middleware;
 
 namespace LoginWebApp
 {
@@ -41,17 +42,27 @@ namespace LoginWebApp
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseMiddleware<RequestLoggingMiddleware>();
 
             app.UseAuthentication();    // аутентификация
             app.UseAuthorization();     // авторизация
 
 
-
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "deleteEvent",
+                    pattern: "{controller=Account}/{action=DeleteEvent}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "patchEvent",
+                    pattern: "{controller=Account}/{action=PatchEvent}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "updateEvent",
+                    pattern: "{controller=Account}/{action=UpdateEvent}/{id?}");
             });
         }
     }

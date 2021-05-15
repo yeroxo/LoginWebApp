@@ -27,14 +27,14 @@ namespace LoginWebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginModel model,string date)
+        public async Task<IActionResult> Login(LoginModel model, string date)
         {
             if (ModelState.IsValid)
             {
                 User user = await db.Users.FirstOrDefaultAsync(u => u.Email == model.Email && u.Password == model.Password);
                 if (user != null)
                 {
-                    await Authenticate(model.Email); // аутентификация
+                    await Authenticate(model.Email,model.Password); // аутентификация
                     return RedirectToAction("Index", "Home");
                 }
                 ModelState.AddModelError("", "Некорректные логин и(или) пароль");
@@ -61,7 +61,7 @@ namespace LoginWebApp.Controllers
                     db.Users.Add(new User { Email = model.Email, Password = model.Password });
                     await db.SaveChangesAsync();
 
-                    await Authenticate(model.Email); // аутентификация
+                    await Authenticate(model.Email,model.Password); // аутентификация
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -71,13 +71,14 @@ namespace LoginWebApp.Controllers
             return View(model);
         }
 
-        private async Task Authenticate(string userName)
+        private async Task Authenticate(string userName,string passWord)
         {
             // создаем один claim
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, userName),
-                new Claim("dateNow", DateTime.Now.ToString())
+                new Claim("dateNow", DateTime.Now.ToString()),
+                new Claim("password",passWord)
             };
             // создаем объект ClaimsIdentity
             ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
@@ -93,18 +94,74 @@ namespace LoginWebApp.Controllers
 
 
         [HttpGet]
-        public IActionResult ShowOrders()
+        public IActionResult ShowEvents()
         {
-            var orders = db.Order.ToList();
-            var items = db.Items.ToList();
-            var orderItems = db.OrderItems.ToList();
-            var order = from or in orderItems
-                        join o in orders on or.OrdersId equals o.id
-                        join i in items on or.ItemId equals i.Id
-                        select new OrdersModel(o.OrderNumber, o.OrderDate, or.Amount, or.Amount * i.Price);
-            var ordersViewModel = new OrdersViewModel();
-            ordersViewModel.ListOrders = order;
+            //var result = DateTime.ParseExact(Test2, "dd/MM/yyyy hh:mm:ss", CultureInfo.InvariantCulture);
+            var userEmail = User.Identity.Name;
+            var users = db.Users.ToList();
+            var userId = users.Where(x => x.Email == userEmail).ToList().Last();
+            var eventItem = db.EventItem.ToList();
+            var userEvents = db.UserEvents.ToList();
+            var events = from or in userEvents
+                         join o in eventItem on or.EventItemId equals o.Id
+                         where or.UserId == userId.Id
+                         select new ViewModels.EventItem(o.Id, o.Name,o.Start,o.End, o.Status);
+            var ordersViewModel = new EventsViewModel();
+            ordersViewModel.ListEvents = events;
             return View(ordersViewModel);
+        }
+
+        [HttpPost]
+        public IActionResult AddEvent(EventItemModel model)
+        {
+            var eventItem = new EventItem();
+
+            var ran = new Random();
+            eventItem.Id = ran.Next();
+            db.EventItem.Add(new EventItem { Name = model.Name,Start = model.start, End = model.end, Status = true});
+            db.SaveChanges();
+            var idItem = db.EventItem.ToList().Where(x => x.Name == model.Name);
+            var userEmail = User.Identity.Name;
+            var userId = db.Users.ToList().Where(x => x.Email == userEmail);
+            var userEvents = new UserEvents();
+            db.UserEvents.Add(new UserEvents {EventItem = idItem.First(), User = userId.First()});
+            db.SaveChanges();
+
+
+            return Redirect("/Account/ShowEvents");
+        }
+
+        [HttpPost]
+        public IActionResult UpdateEvent(int id,string name,DateTime dateStart,DateTime dateEnd)
+        {
+            var eventItem = db.EventItem.Find(id);
+            eventItem.Name = name;
+            eventItem.Start = dateStart;
+            eventItem.End = dateEnd;
+            db.EventItem.Update(eventItem);
+            db.SaveChanges();
+            return Redirect("/Account/ShowEvents");
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteEvent(int Id)
+        {
+            var eventItem = db.EventItem.Find(Id);
+            db.EventItem.Remove(eventItem);
+            var userEvent = db.UserEvents.ToList().Where(x => x.EventItemId == eventItem.Id).First();
+            db.UserEvents.Remove(userEvent);
+            db.SaveChanges();
+            return Redirect("/Account/ShowEvents");
+        }
+
+        [HttpPatch]
+        public IActionResult PatchEvent(int Id)
+        {
+            var eventItem = db.EventItem.Find(Id);
+            eventItem.Status = !eventItem.Status;
+            db.EventItem.Update(eventItem);
+            db.SaveChanges();
+            return Redirect("/Account/ShowEvents");
         }
     }
 }

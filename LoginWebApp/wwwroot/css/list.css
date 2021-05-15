@@ -1,0 +1,118 @@
+﻿.body {
+    margin: 0px;
+    padding: 0px;
+}
+
+.p {
+    margin-left: 10px;
+}
+
+#item_add {
+    display: flex;
+    border: 1px solid black;
+    height: 25px;
+    border-radius: 10px;
+    align-items: center;
+    justify-content: center;
+    margin-right: 30px;
+    margin-top: 10px;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.item {
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-top: 10px;
+    display: flex;
+    border: 1px solid black;
+    height: auto;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    border-radius: 10px;
+    align-items: center;
+    margin-right: 30px;
+}
+
+.item__description {
+    display: flex;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-left: 10px;
+    margin-right: auto;
+    font-size: 20px;
+    color: black;
+}
+
+.item__buy-icon {
+    width: 40px;
+    height: 40px;
+}
+
+.item__check {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding-right: 20px;
+    border-right: 1px solid black;
+}
+
+.item__check-btn {
+    background: none;
+    border: none;
+}
+
+.item__delete-btn {
+    background: none;
+    border: none;
+}
+
+    .item__delete-btn svg {
+        margin-top: 4px;
+        width: 40px;
+        height: 40px;
+    }
+
+.add-item {
+    margin-top: 10px;
+    display: flex;
+    border: 1px solid black;
+    height: 50px;
+    border-radius: 10px;
+    align-items: center;
+}
+
+.add-item__description {
+    margin-left: 20px;
+    font-size: 20px;
+    color: black;
+}
+
+.add-new-item-form {
+    margin-right: 30px;
+}
+
+#item_submit {
+    width: 100%;
+    background: none;
+    border: 1px solid black;
+    height: 27px;
+    border-radius: 10px;
+    margin-top: 10px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.add-new-item-form {
+    display: none;
+}
+
+.update-item-form {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#item_update {
+    margin: 20px;
+}

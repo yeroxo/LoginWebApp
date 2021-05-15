@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Profile";
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>Use this page to detail your profile.</p>
+
+
+@{
+    if (!ViewContext.HttpContext.User.Identity.IsAuthenticated)
+    {
+        <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Войти в кабинет</a>
+    }
+    else
+    {
+        <h1 class="display-4">
+            Ваш профиль.
+        </h1>
+        <p>@ViewContext.HttpContext.User.Identity.Name</p>
+        <p>@ViewContext.HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == "password")?.Value</p>
+        <p>@ViewContext.HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == "dateNow")?.Value</p>
+        <a asp-area="" asp-controller="Account" asp-action="Logout">Выйти</a>
+    }
+}

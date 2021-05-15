@@ -3,28 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 
-public class Item
+public class EventItem
 {
     public int Id { get; set; }
     public string Name { get; set; }
-    public int Price { get; set; }
-}
-
-public class Orders
-{
-    public int id { get; set; }
-    public DateTime OrderDate { get; set; }
-    public string OrderNumber { get; set; }
-}
-
-public class OrderItems
-{
-    public int id { get; set; }
-    public int OrdersId { get; set; }
-    public Orders Orders { get; set; }
-    public int ItemId { get; set; }      
-    public Item Item { get; set; }
-    public int Amount { get; set; }
+    public DateTime Start { get ; set; }
+    public DateTime End { get; set; }
+    public bool Status { get; set; }
 }
 
 public class User
@@ -34,12 +19,22 @@ public class User
     public string Password { get; set; }
 }
 
+public class UserEvents
+{
+    public int Id { get; set; }
+    public int UserId { get; set; }
+    public User User { get; set; }
+    public int EventItemId { get; set; }      
+    public EventItem EventItem { get; set; }
+}
+
+
+
 public class ApplicationContext : DbContext
 {
     public DbSet<User> Users { get; set; }
-    public DbSet<Item> Items { get; set; }
-    public DbSet<Orders> Order { get; set; }
-    public DbSet<OrderItems> OrderItems { get; set; }
+    public DbSet<EventItem> EventItem { get; set; }
+    public DbSet<UserEvents> UserEvents { get; set; }
 
     public ApplicationContext(DbContextOptions<ApplicationContext> options)
     : base(options)

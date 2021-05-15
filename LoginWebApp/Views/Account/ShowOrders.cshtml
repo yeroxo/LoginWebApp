@@ -1,6 +1,0 @@
-﻿@model LoginWebApp.ViewModels.OrdersViewModel
-<h3>Список заказов </h3>
-@foreach (LoginWebApp.ViewModels.OrdersModel order in Model.ListOrders)
-{
-  <p>Номер заказа : @order.Id  Дата заказа: @order.Data Кол-во заказанных продуктов: @order.Amount  Сумма заказа: @order.Sum</p>
-}

@@ -17,7 +17,7 @@
                 @ViewContext.HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == "dateNow")?.Value + @ViewContext.HttpContext.User.Identity.Name
             </h1>
 
-            <a class="btn text-dark" asp-area="" asp-controller="Account" asp-action="ShowOrders">Показать заказы</a>
+            <a class="btn text-dark" asp-area="" asp-controller="Account" asp-action="ShowEvents">Показать заказы</a>
 
             <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Выйти</a>
         }

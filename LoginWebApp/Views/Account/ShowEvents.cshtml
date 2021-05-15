@@ -1,0 +1,43 @@
+﻿@model LoginWebApp.ViewModels.EventsViewModel
+<h3>Список событий</h3>
+@foreach (LoginWebApp.ViewModels.EventItem eventItem in Model.ListEvents)
+{
+    <form class="update-item-form" action="UpdateEvent/@eventItem.Id" method="POST">
+        <p>Название</p>
+        <input name="name" type="text" class="item__description" value="@eventItem.Name" />
+        <p>Начало</p>
+        <input name="dateStart" type="datetime" class="item__description" value="@eventItem.Start" />
+        <p>Конец</p>
+        <input name="dateEnd" type="datetime" class="item__description" value="@eventItem.End" />
+        <input type="submit" id="@eventItem.Id" value="Изменить" />
+    </form>
+    <div class="item__check">
+        <button class="item__check-btn" attr="@eventItem.Id">Статус :@if (!eventItem.Status){<div>Закончено</div>}else{<divp>Активно</divp>}</button>
+    </div>
+    <div>
+        <button class="item__delete-btn" id="@eventItem.Id + -delete-button" attr="@eventItem.Id">
+            <img src="https://icons.iconarchive.com/icons/wwalczyszyn/android-style/16/Trash-empty-icon.png" />
+        </button>
+    </div>
+}
+
+<ul>
+    <form class="add-new-item-form" asp-controller="Account" asp-action="AddEvent">
+        <div class="add-item">
+            <p>Название события</p>
+            <input name="Name" type="text" class="add-item__description" />
+            <p>Начало события</p>
+            <input name="start" type="datetime">
+            <p>Конец события</p>
+            <input name="end" type="datetime">
+        </div>
+        <input type="submit" id="item_submit" value="добавить событие" />
+    </form>
+    <div id="item_add">
+        <p>+</p>
+    </div>
+</ul
+
+
+
+

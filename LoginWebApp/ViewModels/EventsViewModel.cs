@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace LoginWebApp.ViewModels
 {
-    public class OrdersViewModel
+    public class EventsViewModel
     {
-        public IEnumerable<OrdersModel> ListOrders { get; set; }
+        public IEnumerable<EventItem> ListEvents { get; set; }
     }
 }
