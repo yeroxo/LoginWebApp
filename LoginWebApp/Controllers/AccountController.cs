@@ -106,7 +106,7 @@ namespace LoginWebApp.Controllers
                          join o in eventItem on or.EventItemId equals o.Id
                          where or.UserId == userId.Id
                          select new ViewModels.EventItem(o.Id, o.Name,o.Start,o.End, o.Status);
-            var ordersViewModel = new EventsViewModel();
+            var ordersViewModel = new EventItemModel();
             ordersViewModel.ListEvents = events;
             return View(ordersViewModel);
         }
@@ -114,33 +114,46 @@ namespace LoginWebApp.Controllers
         [HttpPost]
         public IActionResult AddEvent(EventItemModel model)
         {
-            var eventItem = new EventItem();
+            var defaultData = DateTime.Parse("01.01.0001 0:00:00");
+            if (String.IsNullOrEmpty(model.Name) || defaultData == model.Start || defaultData == model.End)
+            {
+                ModelState.AddModelError("", "Некоректно заполнены данные");
+                return View("ShowEvents",model);
+            }
+             else
+            {
+                db.EventItem.Add(new EventItem { Name = model.Name, Start = model.Start, End = model.End, Status = true });
+                db.SaveChanges();
+                var idItem = db.EventItem.ToList().Where(x => x.Name == model.Name);
+                var userEmail = User.Identity.Name;
+                var userId = db.Users.ToList().Where(x => x.Email == userEmail);
+                var userEvents = new UserEvents();
+                db.UserEvents.Add(new UserEvents { EventItem = idItem.First(), User = userId.First() });
+                db.SaveChanges();
 
-            var ran = new Random();
-            eventItem.Id = ran.Next();
-            db.EventItem.Add(new EventItem { Name = model.Name,Start = model.start, End = model.end, Status = true});
-            db.SaveChanges();
-            var idItem = db.EventItem.ToList().Where(x => x.Name == model.Name);
-            var userEmail = User.Identity.Name;
-            var userId = db.Users.ToList().Where(x => x.Email == userEmail);
-            var userEvents = new UserEvents();
-            db.UserEvents.Add(new UserEvents {EventItem = idItem.First(), User = userId.First()});
-            db.SaveChanges();
-
-
-            return Redirect("/Account/ShowEvents");
+                return Redirect("/Account/ShowEvents");
+            }   
         }
 
         [HttpPost]
-        public IActionResult UpdateEvent(int id,string name,DateTime dateStart,DateTime dateEnd)
+        public IActionResult UpdateEvent(EventItemModel model)
         {
-            var eventItem = db.EventItem.Find(id);
-            eventItem.Name = name;
-            eventItem.Start = dateStart;
-            eventItem.End = dateEnd;
-            db.EventItem.Update(eventItem);
-            db.SaveChanges();
-            return Redirect("/Account/ShowEvents");
+            var defaultData = DateTime.Parse("01.01.0001 0:00:00");
+            if (String.IsNullOrEmpty(model.Name) || defaultData == model.Start || defaultData == model.End)
+            {
+                ModelState.AddModelError("", "Некоректно заполнены данные");
+                return View("ShowEvents", model);
+            }
+            else
+            {
+                var eventItem = db.EventItem.Find(model.Id);
+                eventItem.Name = model.Name;
+                eventItem.Start = model.Start;
+                eventItem.End = model.End;
+                db.EventItem.Update(eventItem);
+                db.SaveChanges();
+                return Redirect("/Account/ShowEvents");
+            }
         }
 
         [HttpDelete]

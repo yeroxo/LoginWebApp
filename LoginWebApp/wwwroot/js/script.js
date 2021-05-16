@@ -21,8 +21,10 @@
         window.location.reload();
     });
 
+    /*
     $("#item_add").click((e) => {
         $(e.currentTarget).css('display', 'none');
         $(".add-new-item-form").css('display', 'block');
     });
+    */
 };

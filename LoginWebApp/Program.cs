@@ -21,7 +21,11 @@ namespace LoginWebApp
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.ConfigureLogging((hostingContext, builder) =>
+                    {
+                        builder.AddFile("Logs/myapp-{Date}.txt");
+                    })
+                    .UseStartup<Startup>();
                 });
     }
 }
